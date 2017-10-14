@@ -3,7 +3,7 @@ import os
 import requests
 from bs4 import BeautifulSoup
 
-def getSite (url) :
+def getSite (url, rootdir) :
 	r = requests.get (url)
 	r.encoding = r.apparent_encoding
 	html = r.text
@@ -21,7 +21,7 @@ def getSite (url) :
 	for li in content :
 		site = li['href']
 		print site
-		download(site)
+		download(site, rootdir)
 
 
 def download (site, rootdir) :
