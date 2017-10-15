@@ -10,17 +10,22 @@ def getSite (url, rootdir) :
 
 	soup = BeautifulSoup (html, 'html.parser')
 
-	print (soup.prettify())
-
 	#<content id="content">
 
 	content = soup.find("content", id="content").find_all("a")
-	print (type(content))
-	print content
+	#print content
 
+	siteList = []
 	for li in content :
 		site = li['href']
-		print site
+		
+		if site in siteList:
+			continue
+		else :
+			siteList.append(site)
+			
+		#print site
+		
 		download(site, rootdir)
 
 
@@ -32,8 +37,6 @@ def download (site, rootdir) :
 		
 	soup = BeautifulSoup (html, 'html.parser')
 
-	print (soup.prettify())
-	
 	content = soup.find("content", id="content")
 	img = content.find("img")
 	fenye = content.find(attrs={'class':'fenye'}).find('span')
@@ -41,10 +44,7 @@ def download (site, rootdir) :
 	imgURL = img['src']
 	
 	print imgURL
-	print (type(fenye))
-	print fenye
-	print fenye.string
-	
+
 	string = fenye.string
 	
 	numbers = re.findall("\d+", string)
@@ -76,6 +76,10 @@ def download (site, rootdir) :
 		
 		print path
 		
+		if os.path.exists (path) :
+			print "The file has exists"
+			continue
+		
 		saveImge = requests.get(outURL)
 		with open (path, "wb") as f:
 			f.write (saveImge.content)
@@ -85,5 +89,5 @@ def genRootDir (rootdir) :
 	try :
 		os.mkdir (rootdir)
 	except:
-		print "dir exists"
+		print "dir exists is OK!"
 
