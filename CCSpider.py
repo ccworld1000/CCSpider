@@ -29,8 +29,31 @@ import os
 import requests
 from bs4 import BeautifulSoup
 
+def genHeaders (url) :
+	host = url
+	if url :
+		match = re.compile (':\/\/(.*?com)')
+		res = match.search(url)
+		if res :
+			host = res.group(1)
+		
+	headers = {
+		'Accept':'image/webp,image/apng,image/*,*/*;q=0.8',
+		'Accept-Encoding':'gzip, deflate',
+		'Accept-Language':'en-US,en;q=0.8',
+		'Connection':'keep-alive',
+		'Cookie':'UM_distinctid=15f437b4b97121-042a2340cadd34-31607c03-fa000-15f437b4b98a8; Hm_lvt_9a737a8572f89206db6e9c301695b55a=1508665672; Hm_lpvt_9a737a8572f89206db6e9c301695b55a=1508706346',
+		'Host': host,
+		'Referer':url,
+		'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'
+	}
+	
+	return headers
+
 def getSite (url, rootdir) :
-	r = requests.get (url)
+	headers = genHeaders(url)
+	requests.Session()
+	r = requests.get (url, headers = headers)
 	r.encoding = r.apparent_encoding
 	html = r.text
 
@@ -106,7 +129,9 @@ def download (site, rootdir) :
 			print "The file has exists"
 			continue
 		
-		saveImge = requests.get(outURL)
+		headers = genHeaders(outURL)
+
+		saveImge = requests.get(outURL, headers = headers)
 		with open (path, "wb") as f:
 			f.write (saveImge.content)
 			f.close()
