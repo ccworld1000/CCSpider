@@ -60,9 +60,10 @@ def getSite (url, rootdir) :
 	soup = BeautifulSoup (html, 'html.parser')
 
 	#<content id="content">
+	#a class="post-title-link" 
 
-	content = soup.find("content", id="content").find_all("a")
-	#print content
+	#content = soup.find("content", id="content").find_all("a")
+	content = soup.find_all("a", attrs = {'class': 'post-title-link'})
 
 	siteList = []
 	for li in content :
@@ -73,7 +74,7 @@ def getSite (url, rootdir) :
 		else :
 			siteList.append(site)
 			
-		#print site
+		print site
 		
 		download(site, rootdir)
 
@@ -88,12 +89,13 @@ def download (site, rootdir) :
 
 	content = soup.find("content", id="content")
 	img = content.find("img")
-	fenye = content.find(attrs={'class':'fenye'}).find('span')
+	#fenye = content.find(attrs={'class':'fenye'}).find('span')
 	
+	fenye = content.find('span', attrs={'class':'rw'})
 	imgURL = img['src']
-	
+		
 	print imgURL
-
+	
 	string = fenye.string
 	
 	numbers = re.findall("\d+", string)
