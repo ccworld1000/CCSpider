@@ -26,6 +26,7 @@
 
 import re
 import os
+import time
 import requests
 from bs4 import BeautifulSoup
 
@@ -36,15 +37,46 @@ def genHeaders (url) :
 		res = match.search(url)
 		if res :
 			host = res.group(1)
-		
+			
 	headers = {
 		'Accept':'image/webp,image/apng,image/*,*/*;q=0.8',
 		'Accept-Encoding':'gzip, deflate',
 		'Accept-Language':'en-US,en;q=0.8',
 		'Connection':'keep-alive',
-		'Cookie':'UM_distinctid=15f437b4b97121-042a2340cadd34-31607c03-fa000-15f437b4b98a8; Hm_lvt_9a737a8572f89206db6e9c301695b55a=1508665672; Hm_lpvt_9a737a8572f89206db6e9c301695b55a=1508706346',
+		'Cookie':'UM_distinctid=15f437b4b97121-042a2340cadd34-31607c03-fa000-15f437b4b98a8; Hm_lvt_9a737a8572f89206db6e9c301695b55a=1508665672; CNZZDATA3866066=cnzz_eid%3D2085941068-1504442894-%26ntime%3D1504442894; CNZZDATA1263415983=1603382650-1509833581-null%7C1509833581',
 		'Host': host,
-		'Referer':url,
+		'If-Modified-Since':'Fri, 03 Nov 2017 13:28:46 GMT',
+		'If-None-Match':"59fc6f0e-5d9",
+		'Referer': url,
+		'Upgrade-Insecure-Requests': '1',
+		'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'
+	}
+	
+	return headers
+	
+def genDownHeaders (url, site) :
+	host = url
+	if url :
+		#match = re.compile (':\/\/(.*?com)')
+		#match = re.compile (':\/\/(.*?55888)')
+		match = re.compile (':\/\/(.*?me)')
+		res = match.search(url)
+		if res :
+			host = res.group(1)
+
+	print host
+	headers = {
+		'Accept':'image/webp,image/apng,image/*,*/*;q=0.8',
+		'Accept-Encoding':'gzip, deflate',
+		'Accept-Language':'en-US,en;q=0.8',
+		'Connection':'keep-alive',
+		'Cookie':'UM_distinctid=15f437b4b97121-042a2340cadd34-31607c03-fa000-15f437b4b98a8; Hm_lvt_9a737a8572f89206db6e9c301695b55a=1508665672; CNZZDATA3866066=cnzz_eid%3D2085941068-1504442894-%26ntime%3D1504442894; CNZZDATA1263415983=1603382650-1509833581-null%7C1509833581',
+		'Host': host,
+		'If-Modified-Since':'Fri, 03 Nov 2017 13:28:46 GMT',
+		'If-None-Match':"59fc6f0e-5d9",
+		#'Referer':url,
+		'Referer':site,
+		'Upgrade-Insecure-Requests': '1',
 		'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'
 	}
 	
@@ -121,7 +153,14 @@ def download (site, rootdir) :
 		outURL = re.sub (r"/\d+\.", rep, imgURL)
 		fileName = re.sub (r'.*\/', '', outURL)
 
+		#print outURL
+		
+		#outURL = outURL.replace('img1', 'img2')
+		#outURL = outURL.replace('me', 'com:55888')
+		outURL = outURL.replace('com', 'me')
 		print outURL
+		
+		#continue
 
 		path = os.path.join (subpath, fileName)
 		
@@ -131,12 +170,14 @@ def download (site, rootdir) :
 			print "The file has exists"
 			continue
 		
-		headers = genHeaders(outURL)
+		headers = genDownHeaders(outURL, site)
 
 		saveImge = requests.get(outURL, headers = headers)
 		with open (path, "wb") as f:
 			f.write (saveImge.content)
 			f.close()
+		
+		time.sleep (0.5);
 
 def genRootDir (rootdir) :	
 	try :
